@@ -21,6 +21,20 @@ document.addEventListener('DOMContentLoaded', function() {
     const durationSpan = document.getElementById('duration');
     const volumeSlider = document.getElementById('volumeSlider');
 
+    // Elementos del sistema de invitados
+    const guestSelect = document.getElementById('guestSelect');
+    const step1 = document.getElementById('step1');
+    const step2 = document.getElementById('step2');
+    const nextStep1Btn = document.getElementById('nextStep1');
+    const backStep1Btn = document.getElementById('backStep1');
+    const whatsappBtn = document.getElementById('whatsappBtn');
+    const familyMembersList = document.getElementById('familyMembersList');
+    const attendanceRadios = document.querySelectorAll('input[name="attendance"]');
+    const attendanceTypeRadios = document.querySelectorAll('input[name="attendanceType"]');
+    const paymentGroup = document.getElementById('paymentGroup');
+    const attendanceOptionsGroup = document.getElementById('attendanceOptionsGroup');
+    const familyMembersGroup = document.getElementById('familyMembersGroup');
+
     // Variables del carrusel
     let currentSlide = 0;
     const slides = document.querySelectorAll('.carousel-slide');
@@ -29,6 +43,10 @@ document.addEventListener('DOMContentLoaded', function() {
     // Variables del reproductor
     let isPlaying = false;
 
+    // Variables del sistema de invitados
+    let selectedGuest = null;
+    let selectedFamilyMembers = [];
+
     // Inicializar aplicación
     init();
 
@@ -36,10 +54,288 @@ document.addEventListener('DOMContentLoaded', function() {
         setupNavigation();
         setupCarousel();
         setupAnimations();
-        setupForm();
+        setupGuestSystem();
         setupModal();
         setupScrollEffects();
         setupMusicPlayer();
+    }
+
+    // Configurar sistema de invitados
+    function setupGuestSystem() {
+        // Llenar el select con los invitados
+        populateGuestSelect();
+        
+        // Eventos
+        nextStep1Btn.addEventListener('click', handleNextStep1);
+        backStep1Btn.addEventListener('click', handleBackStep1);
+        guestSelect.addEventListener('change', handleGuestSelection);
+        whatsappBtn.addEventListener('click', handleWhatsAppRedirect);
+        
+        // Eventos para mostrar/ocultar opciones de pago
+        attendanceRadios.forEach(radio => {
+            radio.addEventListener('change', handleAttendanceChange);
+        });
+
+        // Eventos para opciones de asistencia (solo/familia)
+        attendanceTypeRadios.forEach(radio => {
+            radio.addEventListener('change', handleAttendanceTypeChange);
+        });
+
+        // Inicializar estado del botón
+        nextStep1Btn.disabled = true;
+        nextStep1Btn.style.opacity = '0.5';
+    }
+
+    function populateGuestSelect() {
+        const guests = getAllGuests();
+        guestSelect.innerHTML = '<option value="">Busca tu nombre...</option>';
+        
+        guests.forEach(guest => {
+            const option = document.createElement('option');
+            option.value = guest.id;
+            option.textContent = guest.name;
+            guestSelect.appendChild(option);
+        });
+    }
+
+    function handleGuestSelection() {
+        const guestId = guestSelect.value;
+        if (guestId) {
+            selectedGuest = getGuestData(guestId);
+            nextStep1Btn.disabled = false;
+            nextStep1Btn.style.opacity = '1';
+        } else {
+            selectedGuest = null;
+            nextStep1Btn.disabled = true;
+            nextStep1Btn.style.opacity = '0.5';
+        }
+    }
+
+    function handleNextStep1() {
+        if (!selectedGuest) return;
+        
+        // Mostrar información del invitado
+        displayGuestInfo();
+        
+        // Mostrar paso 2
+        step1.classList.add('hidden');
+        step2.classList.remove('hidden');
+    }
+
+    function handleBackStep1() {
+        step2.classList.add('hidden');
+        step1.classList.remove('hidden');
+        
+        // Limpiar selecciones
+        selectedFamilyMembers = [];
+        const checkboxes = familyMembersList.querySelectorAll('input[type="checkbox"]');
+        checkboxes.forEach(cb => cb.checked = false);
+        
+        // Limpiar radio buttons
+        const radios = step2.querySelectorAll('input[type="radio"]');
+        radios.forEach(radio => radio.checked = false);
+        
+        // Ocultar grupos
+        paymentGroup.style.display = 'none';
+        whatsappBtn.style.display = 'none';
+        attendanceOptionsGroup.style.display = 'none';
+        familyMembersGroup.style.display = 'none';
+    }
+
+    function displayGuestInfo() {
+        // Mostrar nombre del invitado
+        document.getElementById('selectedGuestName').textContent = selectedGuest.name;
+        
+        // Mostrar tipo de entrada y precio
+        const ticketTypeText = selectedGuest.ticketType === 'individual' ? 'Individual' : 'Grupo Familiar';
+        const priceText = selectedGuest.ticketType === 'individual' ? '$10.000' : '$20.000';
+        
+        document.getElementById('ticketTypeDisplay').textContent = ticketTypeText;
+        document.getElementById('priceDisplay').textContent = priceText;
+        
+        // Mostrar opciones de asistencia solo para grupos familiares
+        if (selectedGuest.ticketType === 'family' && selectedGuest.familyMembers.length > 1) {
+            attendanceOptionsGroup.style.display = 'block';
+            displayFamilyMembers();
+        } else {
+            attendanceOptionsGroup.style.display = 'none';
+            familyMembersGroup.style.display = 'none';
+            // Para invitados individuales, solo se incluye a ellos mismos
+            selectedFamilyMembers = [selectedGuest.name];
+        }
+    }
+
+    function handleAttendanceTypeChange(e) {
+        if (e.target.value === 'family') {
+            familyMembersGroup.style.display = 'block';
+            // Seleccionar todos los miembros por defecto
+            const checkboxes = familyMembersList.querySelectorAll('input[type="checkbox"]');
+            checkboxes.forEach(cb => cb.checked = true);
+            updateSelectedMembers();
+        } else if (e.target.value === 'alone') {
+            familyMembersGroup.style.display = 'none';
+            // Solo incluir al invitado principal
+            selectedFamilyMembers = [selectedGuest.name];
+        }
+    }
+
+    function displayFamilyMembers() {
+        familyMembersList.innerHTML = '';
+        
+        selectedGuest.familyMembers.forEach((member, index) => {
+            const memberDiv = document.createElement('div');
+            memberDiv.className = 'family-member-item';
+            
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.id = `member-${index}`;
+            checkbox.value = member;
+            checkbox.checked = true; // Por defecto todos están seleccionados
+            
+            const label = document.createElement('label');
+            label.htmlFor = `member-${index}`;
+            label.textContent = member;
+            
+            // Si es el invitado principal, no permitir deselección
+            if (index === 0) {
+                checkbox.disabled = true;
+                memberDiv.classList.add('main-guest');
+            }
+            
+            checkbox.addEventListener('change', updateSelectedMembers);
+            
+            memberDiv.appendChild(checkbox);
+            memberDiv.appendChild(label);
+            familyMembersList.appendChild(memberDiv);
+        });
+        
+        // Inicializar lista de miembros seleccionados
+        updateSelectedMembers();
+    }
+
+    function updateSelectedMembers() {
+        const checkboxes = familyMembersList.querySelectorAll('input[type="checkbox"]:checked');
+        selectedFamilyMembers = Array.from(checkboxes).map(cb => cb.value);
+    }
+
+    function handleAttendanceChange(e) {
+        if (e.target.value === 'yes') {
+            paymentGroup.style.display = 'block';
+            whatsappBtn.style.display = 'inline-flex';
+            
+            // Hacer requeridos los campos de pago
+            const paymentRadios = document.querySelectorAll('input[name="paymentStatus"]');
+            paymentRadios.forEach(radio => radio.required = true);
+        } else {
+            paymentGroup.style.display = 'none';
+            whatsappBtn.style.display = 'none';
+            
+            // Quitar requerimiento de campos de pago
+            const paymentRadios = document.querySelectorAll('input[name="paymentStatus"]');
+            paymentRadios.forEach(radio => {
+                radio.required = false;
+                radio.checked = false;
+            });
+        }
+    }
+
+    function handleWhatsAppRedirect() {
+        // Validar que se haya seleccionado asistencia
+        const attendanceValue = document.querySelector('input[name="attendance"]:checked')?.value;
+        if (!attendanceValue) {
+            alert('Por favor selecciona si asistirás o no.');
+            return;
+        }
+
+        if (attendanceValue === 'yes') {
+            // Validar que se haya seleccionado estado de pago
+            const paymentValue = document.querySelector('input[name="paymentStatus"]:checked')?.value;
+            if (!paymentValue) {
+                alert('Por favor selecciona el estado del pago.');
+                return;
+            }
+
+            // Para grupos familiares, validar selección de tipo de asistencia
+            if (selectedGuest.ticketType === 'family' && selectedGuest.familyMembers.length > 1) {
+                const attendanceTypeValue = document.querySelector('input[name="attendanceType"]:checked')?.value;
+                if (!attendanceTypeValue) {
+                    alert('Por favor selecciona si asistirás solo o con tu grupo familiar.');
+                    return;
+                }
+            }
+        }
+
+        // Generar mensaje personalizado
+        const message = generatePersonalizedMessage();
+        
+        // Generar URL de WhatsApp
+        const whatsappURL = generateWhatsAppURL(selectedGuest, message);
+        
+        // Mostrar modal de confirmación
+        showSuccessModal();
+        
+        // Redirigir después de un breve delay
+        setTimeout(() => {
+            window.open(whatsappURL, '_blank');
+            hideModal();
+            resetForm();
+        }, 2000);
+    }
+
+    function generatePersonalizedMessage() {
+        const attendanceValue = document.querySelector('input[name="attendance"]:checked')?.value;
+        const paymentValue = document.querySelector('input[name="paymentStatus"]:checked')?.value;
+        const messageText = document.getElementById('message').value;
+        
+        let message = `Hola! Soy ${selectedGuest.name} y quiero confirmar mi asistencia a la boda.`;
+        
+        if (attendanceValue === 'yes') {
+            if (selectedGuest.ticketType === 'family' && selectedGuest.familyMembers.length > 1) {
+                const attendanceTypeValue = document.querySelector('input[name="attendanceType"]:checked')?.value;
+                if (attendanceTypeValue === 'alone') {
+                    message += ` Asistiré solo/a.`;
+                } else {
+                    message += ` Asistiré con mi grupo familiar: ${selectedFamilyMembers.join(', ')}.`;
+                }
+            } else {
+                message += ` Confirmo mi asistencia.`;
+            }
+            
+            if (paymentValue === 'deposit') {
+                message += ` Ya pagué la seña del 50%.`;
+            } else {
+                message += ` Pagaré la seña próximamente.`;
+            }
+        } else {
+            message += ` Lamentablemente no podré asistir.`;
+        }
+        
+        if (messageText.trim()) {
+            message += ` Mensaje adicional: ${messageText}`;
+        }
+        
+        return message;
+    }
+
+    function resetForm() {
+        // Volver al paso 1
+        step2.classList.add('hidden');
+        step1.classList.remove('hidden');
+        
+        // Limpiar formulario
+        rsvpForm.reset();
+        selectedGuest = null;
+        selectedFamilyMembers = [];
+        
+        // Resetear botón
+        nextStep1Btn.disabled = true;
+        nextStep1Btn.style.opacity = '0.5';
+        
+        // Ocultar elementos del paso 2
+        paymentGroup.style.display = 'none';
+        whatsappBtn.style.display = 'none';
+        attendanceOptionsGroup.style.display = 'none';
+        familyMembersGroup.style.display = 'none';
     }
 
     // Configurar navegación
@@ -251,128 +547,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Configurar formulario
-    function setupForm() {
-        rsvpForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            // Validar formulario
-            if (validateForm()) {
-                // Simular envío
-                setTimeout(() => {
-                    showSuccessModal();
-                    rsvpForm.reset();
-                }, 1000);
-            }
-        });
-
-        // Validación dinámica del tipo de entrada y número de invitados
-        const ticketType = document.getElementById('ticketType');
-        const guests = document.getElementById('guests');
-
-        ticketType.addEventListener('change', function() {
-            updateGuestOptions();
-        });
-
-        function updateGuestOptions() {
-            const selectedType = ticketType.value;
-            guests.innerHTML = '<option value="">Selecciona...</option>';
-
-            if (selectedType === 'individual') {
-                guests.innerHTML += '<option value="1">1 persona</option>';
-            } else if (selectedType === 'family') {
-                for (let i = 2; i <= 4; i++) {
-                    guests.innerHTML += `<option value="${i}">${i} personas</option>`;
-                }
-            }
-        }
-    }
-
-    function validateForm() {
-        const requiredFields = rsvpForm.querySelectorAll('[required]');
-        let isValid = true;
-        
-        requiredFields.forEach(field => {
-            if (!field.value.trim() && field.type !== 'radio') {
-                showFieldError(field, 'Este campo es obligatorio');
-                isValid = false;
-            } else {
-                clearFieldError(field);
-            }
-        });
-
-        // Validar radio buttons
-        const attendanceRadios = rsvpForm.querySelectorAll('input[name="attendance"]');
-        const paymentRadios = rsvpForm.querySelectorAll('input[name="paymentStatus"]');
-
-        if (!Array.from(attendanceRadios).some(radio => radio.checked)) {
-            showFieldError(attendanceRadios[0].closest('.form-group'), 'Debes seleccionar si asistirás');
-            isValid = false;
-        }
-
-        if (!Array.from(paymentRadios).some(radio => radio.checked)) {
-            showFieldError(paymentRadios[0].closest('.form-group'), 'Debes seleccionar el estado del pago');
-            isValid = false;
-        }
-        
-        // Validar email
-        const email = rsvpForm.querySelector('#email');
-        if (email.value && !isValidEmail(email.value)) {
-            showFieldError(email, 'Por favor ingresa un email válido');
-            isValid = false;
-        }
-
-        // Validar coherencia entre tipo de entrada y número de invitados
-        const ticketType = document.getElementById('ticketType');
-        const guests = document.getElementById('guests');
-
-        if (ticketType.value === 'individual' && guests.value !== '1') {
-            showFieldError(guests, 'Para entrada individual solo se permite 1 persona');
-            isValid = false;
-        }
-
-        if (ticketType.value === 'family' && (guests.value === '1' || guests.value === '')) {
-            showFieldError(guests, 'Para grupo familiar se requieren mínimo 2 personas');
-            isValid = false;
-        }
-        
-        return isValid;
-    }
-
-    function showFieldError(field, message) {
-        clearFieldError(field);
-        
-        const errorElement = document.createElement('div');
-        errorElement.classList.add('field-error');
-        errorElement.textContent = message;
-        errorElement.style.color = '#DC2626';
-        errorElement.style.fontSize = '0.8rem';
-        errorElement.style.marginTop = '0.25rem';
-        
-        const container = field.closest ? field.closest('.form-group') : field.parentNode;
-        container.appendChild(errorElement);
-        
-        if (field.style) {
-            field.style.borderColor = '#DC2626';
-        }
-    }
-
-    function clearFieldError(field) {
-        const container = field.closest ? field.closest('.form-group') : field.parentNode;
-        const errorElement = container.querySelector('.field-error');
-        if (errorElement) {
-            errorElement.remove();
-        }
-        if (field.style) {
-            field.style.borderColor = '';
-        }
-    }
-
-    function isValidEmail(email) {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        return emailRegex.test(email);
-    }
-
     // Configurar modal
     function setupModal() {
         closeModal.addEventListener('click', hideModal);
@@ -414,23 +588,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Animación del contador (si se necesita)
-    function animateCounter(element, target, duration = 2000) {
-        const start = 0;
-        const increment = target / (duration / 16);
-        let current = start;
-        
-        const timer = setInterval(function() {
-            current += increment;
-            element.textContent = Math.floor(current);
-            
-            if (current >= target) {
-                element.textContent = target;
-                clearInterval(timer);
-            }
-        }, 16);
-    }
-
     // Utilidades
     function debounce(func, wait) {
         let timeout;
@@ -455,60 +612,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 setTimeout(() => inThrottle = false, limit);
             }
         };
-    }
-
-    // Lazy loading para imágenes
-    function setupLazyLoading() {
-        const images = document.querySelectorAll('img[data-src]');
-        
-        const imageObserver = new IntersectionObserver(function(entries) {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    const img = entry.target;
-                    img.src = img.dataset.src;
-                    img.classList.remove('lazy');
-                    imageObserver.unobserve(img);
-                }
-            });
-        });
-
-        images.forEach(img => imageObserver.observe(img));
-    }
-
-    // Smooth scroll para navegadores que no lo soportan
-    function smoothScroll(target, duration = 1000) {
-        const targetElement = document.querySelector(target);
-        if (!targetElement) return;
-        
-        const targetPosition = targetElement.offsetTop - 70;
-        const startPosition = window.pageYOffset;
-        const distance = targetPosition - startPosition;
-        let startTime = null;
-        
-        function animation(currentTime) {
-            if (startTime === null) startTime = currentTime;
-            const timeElapsed = currentTime - startTime;
-            const run = ease(timeElapsed, startPosition, distance, duration);
-            window.scrollTo(0, run);
-            
-            if (timeElapsed < duration) {
-                requestAnimationFrame(animation);
-            }
-        }
-        
-        function ease(t, b, c, d) {
-            t /= d / 2;
-            if (t < 1) return c / 2 * t * t + b;
-            t--;
-            return -c / 2 * (t * (t - 2) - 1) + b;
-        }
-        
-        requestAnimationFrame(animation);
-    }
-
-    // Inicializar lazy loading si hay imágenes lazy
-    if (document.querySelectorAll('img[data-src]').length > 0) {
-        setupLazyLoading();
     }
 });
 

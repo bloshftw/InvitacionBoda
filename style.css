@@ -849,6 +849,83 @@ h1, h2, h3, h4 {
     border: 2px solid var(--accent-color);
 }
 
+/* Pasos del formulario */
+.form-step {
+    transition: var(--transition);
+}
+
+.form-step.hidden {
+    display: none;
+}
+
+/* Información del invitado */
+.guest-info-card {
+    background: var(--light-blue);
+    padding: 2rem;
+    border-radius: var(--border-radius);
+    margin-bottom: 2rem;
+    border: 2px solid var(--accent-color);
+}
+
+.guest-info-card h3 {
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.guest-details p {
+    margin-bottom: 0.5rem;
+    color: var(--text-dark);
+}
+
+/* Lista de miembros familiares */
+.family-members-list {
+    background: #f8fafc;
+    padding: 1.5rem;
+    border-radius: var(--border-radius);
+    border: 2px solid var(--light-blue);
+}
+
+.family-member-item {
+    display: flex;
+    align-items: center;
+    padding: 0.8rem;
+    margin-bottom: 0.5rem;
+    background: var(--white);
+    border-radius: var(--border-radius);
+    border: 1px solid #e2e8f0;
+    transition: var(--transition);
+}
+
+.family-member-item:hover {
+    border-color: var(--accent-color);
+    box-shadow: 0 2px 8px rgba(212, 175, 55, 0.1);
+}
+
+.family-member-item.main-guest {
+    background: linear-gradient(135deg, var(--light-blue), #dbeafe);
+    border-color: var(--primary-color);
+}
+
+.family-member-item input[type="checkbox"] {
+    margin-right: 0.8rem;
+    width: 18px;
+    height: 18px;
+    accent-color: var(--accent-color);
+}
+
+.family-member-item label {
+    flex: 1;
+    cursor: pointer;
+    color: var(--text-dark);
+    font-weight: 500;
+}
+
+.family-member-item.main-guest label {
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
 .form-group {
     margin-bottom: 2rem;
 }
@@ -890,13 +967,18 @@ h1, h2, h3, h4 {
     display: flex;
     align-items: center;
     cursor: pointer;
-    padding: 0.5rem;
+    padding: 0.8rem 1rem;
     border-radius: var(--border-radius);
     transition: var(--transition);
+    border: 2px solid var(--light-blue);
+    background: var(--white);
+    flex: 1;
+    min-width: 200px;
 }
 
 .radio-label:hover {
     background: rgba(212, 175, 55, 0.1);
+    border-color: var(--accent-color);
 }
 
 .radio-label input[type="radio"] {
@@ -905,28 +987,68 @@ h1, h2, h3, h4 {
     accent-color: var(--accent-color);
 }
 
-.submit-btn {
-    background: var(--primary-color);
-    color: var(--white);
-    border: 2px solid var(--primary-color);
+/* Botones */
+.next-btn, .back-btn, .whatsapp-btn {
     padding: 1rem 2rem;
     border-radius: var(--border-radius);
     font-size: 1.1rem;
     font-weight: 600;
     cursor: pointer;
     transition: var(--transition);
-    width: 100%;
-    display: flex;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
+    border: 2px solid;
+    text-decoration: none;
 }
 
-.submit-btn:hover {
+.next-btn {
+    background: var(--primary-color);
+    color: var(--white);
+    border-color: var(--primary-color);
+    width: 100%;
+    opacity: 0.5;
+}
+
+.next-btn:not(:disabled):hover {
     background: var(--accent-color);
     border-color: var(--accent-color);
     transform: translateY(-2px);
     box-shadow: var(--shadow-hover);
+    opacity: 1;
+}
+
+.back-btn {
+    background: transparent;
+    color: var(--text-light);
+    border-color: var(--text-light);
+}
+
+.back-btn:hover {
+    background: var(--text-light);
+    color: var(--white);
+    transform: translateY(-2px);
+}
+
+.whatsapp-btn {
+    background: #25D366;
+    color: var(--white);
+    border-color: #25D366;
+    flex: 1;
+}
+
+.whatsapp-btn:hover {
+    background: #128C7E;
+    border-color: #128C7E;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-hover);
+}
+
+.form-buttons {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
 }
 
 /* Footer */
@@ -937,8 +1059,9 @@ h1, h2, h3, h4 {
 }
 
 .footer-content {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    display: flex;
+    align-items: center;
+    justify-content: center;
     gap: 2rem;
     margin-bottom: 2rem;
 }
