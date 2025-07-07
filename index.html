@@ -51,6 +51,58 @@
         </div>
     </nav>
 
+    <!-- Music Section -->
+    <section class="music" id="music">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Nuestra Canción</h2>
+                <div class="decorative-element">
+                    <i class="fas fa-music"></i>
+                </div>
+                <p class="music-subtitle">La melodía que acompañará nuestro día especial</p>
+            </div>
+            <div class="music-player-container">
+                <div class="music-player">
+                    <div class="player-info">
+                        <div class="song-artwork">
+                            <i class="fas fa-heart"></i>
+                        </div>
+                        <div class="song-details">
+                            <h3 id="songTitle">Nuestra Canción Especial</h3>
+                            <p id="songArtist">Carolina & Marcelo</p>
+                        </div>
+                    </div>
+                    <div class="player-controls">
+                        <button class="control-btn" id="playPauseBtn">
+                            <i class="fas fa-play"></i>
+                        </button>
+                        <div class="progress-container">
+                            <div class="progress-bar">
+                                <div class="progress" id="progress"></div>
+                            </div>
+                            <div class="time-info">
+                                <span id="currentTime">0:00</span>
+                                <span id="duration">0:00</span>
+                            </div>
+                        </div>
+                        <div class="volume-container">
+                            <i class="fas fa-volume-up"></i>
+                            <input type="range" id="volumeSlider" min="0" max="100" value="50" class="volume-slider">
+                        </div>
+                    </div>
+                    <audio id="audioPlayer" preload="metadata">
+                        <source src="./wedding-song.mp3.mp3" type="audio/mpeg">
+                        <source src="./wedding-song.ogg" type="audio/ogg">
+                        Tu navegador no soporta el elemento de audio.
+                    </audio>
+                </div>
+                <div class="upload-info">
+                    <p><i class="fas fa-info-circle"></i> Si deseas escuchar la cancion que elegimos para nuestro momento, solo dale a reproducir</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- About Section -->
     <section class="about" id="about">
         <div class="container">
@@ -209,7 +261,6 @@
                         <li><i class="fas fa-check"></i> Ceremonia completa</li>
                         <li><i class="fas fa-check"></i> Cena y bebidas</li>
                         <li><i class="fas fa-check"></i> Música y entretenimiento</li>
-                        <li><i class="fas fa-check"></i> Mesa familiar reservada</li>
                     </ul>
                 </div>
             </div>
@@ -227,57 +278,7 @@
         </div>
     </section>
 
-    <!-- Music Section -->
-    <section class="music" id="music">
-        <div class="container">
-            <div class="section-header">
-                <h2 class="section-title">Nuestra Canción</h2>
-                <div class="decorative-element">
-                    <i class="fas fa-music"></i>
-                </div>
-                <p class="music-subtitle">La melodía que acompañará nuestro día especial</p>
-            </div>
-            <div class="music-player-container">
-                <div class="music-player">
-                    <div class="player-info">
-                        <div class="song-artwork">
-                            <i class="fas fa-heart"></i>
-                        </div>
-                        <div class="song-details">
-                            <h3 id="songTitle">Nuestra Canción Especial</h3>
-                            <p id="songArtist">Carolina & Marcelo</p>
-                        </div>
-                    </div>
-                    <div class="player-controls">
-                        <button class="control-btn" id="playPauseBtn">
-                            <i class="fas fa-play"></i>
-                        </button>
-                        <div class="progress-container">
-                            <div class="progress-bar">
-                                <div class="progress" id="progress"></div>
-                            </div>
-                            <div class="time-info">
-                                <span id="currentTime">0:00</span>
-                                <span id="duration">0:00</span>
-                            </div>
-                        </div>
-                        <div class="volume-container">
-                            <i class="fas fa-volume-up"></i>
-                            <input type="range" id="volumeSlider" min="0" max="100" value="50" class="volume-slider">
-                        </div>
-                    </div>
-                    <audio id="audioPlayer" preload="metadata">
-                        <source src="./wedding-song.mp3.mp3" type="audio/mpeg">
-                        <source src="./wedding-song.ogg" type="audio/ogg">
-                        Tu navegador no soporta el elemento de audio.
-                    </audio>
-                </div>
-                <div class="upload-info">
-                    <p><i class="fas fa-info-circle"></i> Si deseas escuchar la cancion que elegimos para nuestro momento, solo dale a reproducir</p>
-                </div>
-            </div>
-        </div>
-    </section>
+    
 
     <!-- Gallery Section -->
     <section class="gallery" id="gallery">
