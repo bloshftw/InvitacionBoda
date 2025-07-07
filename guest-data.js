@@ -438,12 +438,14 @@ const guestDatabase = {
         }
     },
     "fabiana": {
-        name: "Fabiana (Jardín)",
+        name: "Fabiana Chirino",
         familyMembers: [
-            "Fabiana (Jardín)"
+            "Fabiana Chirino",
+            "Dayana",
+            "Gabriel"
         ],
-        maxGuests: 1,
-        ticketType: "individual",
+        maxGuests: 3,
+        ticketType: "family",
         whatsappContact: {
             name: "María (Organizadora)",
             phone: "5492657557205"
@@ -486,12 +488,13 @@ const guestDatabase = {
         }
     },
     "marcela": {
-        name: "Marcela (Jardín)",
+        name: "Marcela Dominguez",
         familyMembers: [
-            "Marcela (Jardín)"
+            "Marcela Dominguez",
+            "Cristian"
         ],
-        maxGuests: 1,
-        ticketType: "individual",
+        maxGuests: 2,
+        ticketType: "family",
         whatsappContact: {
             name: "María (Organizadora)",
             phone: "5492657557205"
@@ -758,7 +761,7 @@ const guestDatabase = {
         name: "Enrique",
         familyMembers: [
             "Enrique",
-            "Marcela",
+            "Marcela Maldonado",
             "Lucas"
         ],
         maxGuests: 3,

@@ -41,12 +41,23 @@ h1, h2, h3, h4 {
 /* Hero Section */
 .hero {
     height: 100vh;
-    background: linear-gradient(135deg, var(--primary-color) 0%, #2563EB 100%);
+    background-image: url(./img/flores-azules.jpg);
+    background-size: cover;
+    background-position: center;
     display: flex;
     align-items: center;
     justify-content: center;
     position: relative;
     overflow: hidden;
+}
+
+.hero::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(30, 41, 59, 0.20); /* Azul oscuro semitransparente */
+    z-index: 1;
+    pointer-events: none;
 }
 
 .hero::before {
@@ -56,7 +67,6 @@ h1, h2, h3, h4 {
     left: 0;
     right: 0;
     bottom: 0;
-    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="2" fill="rgba(212,175,55,0.1)"/></svg>');
     background-size: 50px 50px;
     animation: float 20s infinite linear;
 }
@@ -576,7 +586,7 @@ h1, h2, h3, h4 {
 /* Music Section */
 .music {
     padding: 6rem 0;
-    background: var(--light-blue);
+    background: var(--white);
 }
 
 .music-subtitle {
