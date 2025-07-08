@@ -1280,3 +1280,15 @@ h1, h2, h3, h4 {
         transform: translateY(-5px);
     }
 }
+
+@media (max-width: 425px) {
+
+.back-btn {
+    padding: 0.5rem 0.7rem;
+}
+
+.whatsapp-btn{
+    padding: 0.5rem 0.7rem;
+}
+
+}
