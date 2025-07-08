@@ -97,19 +97,6 @@ const guestDatabase = {
             phone: "5492657557205"
         }
     },
-    "mary-bazan-y-adrian": {
-        name: "Mary Bazán",
-        familyMembers: [
-            "Mary Bazán",
-            "Adrián"
-        ],
-        maxGuests: 2,
-        ticketType: "family",
-        whatsappContact: {
-            name: "María (Organizadora)",
-            phone: "5492657557205"
-        }
-    },
     "paola-funez": {
         name: "Paola Funez",
         familyMembers: [
